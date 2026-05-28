@@ -1,0 +1,36 @@
+{
+  "entities": {
+    "Update": {
+      "title": "Update",
+      "description": "Information about application updates.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "App version like 1.0.1"
+        },
+        "url": {
+          "type": "string",
+          "description": "Direct download URL for the .exe file"
+        },
+        "releaseNotes": {
+          "type": "string",
+          "description": "Notes for this version"
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Timestamp of release"
+        }
+      },
+      "required": ["version", "url", "createdAt"]
+    }
+  },
+  "firestore": {
+    "updates": {
+      "schema": {
+        "$ref": "#/entities/Update"
+      },
+      "description": "A collection containing app update documents, traditionally with a single 'latest' document."
+    }
+  }
+}

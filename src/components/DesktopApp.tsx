@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, TerminalSquare, Activity, Settings2, ShieldCheck, CheckCircle2, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { AutoUpdater } from './AutoUpdater';
 
 type Message = {
   id: string;
@@ -172,6 +173,7 @@ export function DesktopApp() {
            </div>
          </div>
        </div>
+       <AutoUpdater />
     </div>
   );
 }
