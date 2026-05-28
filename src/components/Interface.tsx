@@ -17,7 +17,7 @@ export function Interface() {
             <div className="w-3 h-3 rounded-full bg-slate-200"></div>
             <div className="w-3 h-3 rounded-full bg-slate-200"></div>
           </div>
-          <div className="flex-1 text-center font-mono text-xs text-slate-500">Windows Assistant</div>
+          <div className="flex-1 text-center font-mono text-xs text-slate-500">Darkshel</div>
           <div className="w-16"></div> {/* Balance spacer */}
         </div>
         <div className="p-6 md:p-8 space-y-8 bg-white">

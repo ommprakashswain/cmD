@@ -1,5 +1,5 @@
 {
-  "name": "Windows Assistant",
+  "name": "Darkshel",
   "description": "Windows administration, simplified. Natural language to PowerShell command automation. Built with React and Electron.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

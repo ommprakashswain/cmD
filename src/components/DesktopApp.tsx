@@ -82,7 +82,7 @@ export function DesktopApp() {
        <div className="w-64 bg-slate-50 border-r border-slate-200 flex flex-col flex-shrink-0">
          <div className="h-14 border-b border-slate-200 flex items-center px-4 gap-2 font-semibold text-sm">
            <TerminalSquare className="w-5 h-5 text-slate-700" />
-           Windows Assistant
+           Darkshel
          </div>
          <div className="flex-1 py-4 overflow-y-auto">
            <div className="px-3 mb-2 flex items-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">

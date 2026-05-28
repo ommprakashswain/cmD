@@ -91,7 +91,7 @@ export function AutoUpdater() {
         <div>
           <h3 className="font-semibold text-sm">Update Available ({updateInfo.version})</h3>
           <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-            {updateInfo.releaseNotes || 'A new version of Windows Assistant is ready to install.'}
+            {updateInfo.releaseNotes || 'A new version of Darkshel is ready to install.'}
           </p>
         </div>
       </div>

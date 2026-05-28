@@ -8,7 +8,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-900 font-semibold tracking-tight">
             <LayoutIcon className="w-5 h-5" />
-            <span>Windows Assistant</span>
+            <span>Darkshel</span>
           </div>
           <nav className="hidden sm:flex gap-6 text-sm font-medium text-slate-500">
             <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
@@ -19,8 +19,9 @@ export function Layout({ children }: { children: ReactNode }) {
       <main className="flex-1 pt-16">
         {children}
       </main>
-      <footer className="py-8 text-center text-sm text-slate-500 border-t border-slate-100">
-        <p>© {new Date().getFullYear()} Windows Assistant. This is a mockup landing page.</p>
+      <footer className="py-8 text-center text-sm text-slate-500 border-t border-slate-100 flex flex-col gap-2 items-center justify-center">
+        <p>© {new Date().getFullYear()} Darkshel.</p>
+        <a href="https://darkshel.vercel.app/" target="_blank" rel="noreferrer" className="text-emerald-500 hover:text-emerald-600 font-medium">darkshel.vercel.app</a>
       </footer>
     </div>
   );
