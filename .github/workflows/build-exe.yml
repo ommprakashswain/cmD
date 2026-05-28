@@ -33,7 +33,7 @@ jobs:
         run: npm install firebase-admin
 
       - name: Publish Update to Firebase
-        run: node scripts/release.js
+        run: node scripts/release.cjs
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_STORAGE_BUCKET: letex-1763867847627.firebasestorage.app
