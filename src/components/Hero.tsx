@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { DownloadButton } from './DownloadButton';
 import { Terminal } from 'lucide-react';
+import pkg from '../../package.json';
 
 export function Hero() {
   return (
@@ -37,7 +38,7 @@ export function Hero() {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <DownloadButton />
-        <p className="mt-4 text-xs text-slate-500 font-mono">v1.0.0 — Windows 10/11</p>
+        <p className="mt-4 text-xs text-slate-500 font-mono">v{pkg.version} — Windows 10/11</p>
       </motion.div>
     </section>
   );

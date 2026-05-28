@@ -1,7 +1,6 @@
 // release.js - Runs in GitHub actions to publish the update
 const path = require('path');
 const fs = require('fs');
-const path = require('path');
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const { getStorage } = require('firebase-admin/storage');
