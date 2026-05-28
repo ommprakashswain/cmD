@@ -39,6 +39,9 @@
   "build": {
     "appId": "com.windowsassistant.app",
     "productName": "Windows Assistant",
+    "extraMetadata": {
+      "main": "main.cjs"
+    },
     "directories": {
       "output": "release/"
     },
@@ -51,4 +54,3 @@
     }
   }
 }
-    

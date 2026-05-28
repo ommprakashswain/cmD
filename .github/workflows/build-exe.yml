@@ -25,7 +25,7 @@ jobs:
         run: npm run build
 
       - name: Build Windows Exe
-        run: npx electron-builder --win --x64 -c.extraMetadata.main=main.cjs
+        run: npx electron-builder --win --x64
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
