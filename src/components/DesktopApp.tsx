@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, TerminalSquare, Activity, Settings2, ShieldCheck, CheckCircle2, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { AutoUpdater } from './AutoUpdater';
+import { Logo } from './Logo';
 
 type Message = {
   id: string;
@@ -81,7 +82,7 @@ export function DesktopApp() {
        {/* Sidebar */}
        <div className="w-64 bg-slate-50 border-r border-slate-200 flex flex-col flex-shrink-0">
          <div className="h-14 border-b border-slate-200 flex items-center px-4 gap-2 font-semibold text-sm">
-           <TerminalSquare className="w-5 h-5 text-slate-700" />
+           <img src="/logo.png" alt="Darkshel Logo" className="w-5 h-5 text-slate-700" />
            Darkshel
          </div>
          <div className="flex-1 py-4 overflow-y-auto">

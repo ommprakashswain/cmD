@@ -12,8 +12,8 @@ export function Hero() {
         transition={{ duration: 0.5 }}
         className="flex justify-center mb-6"
       >
-        <div className="p-3 bg-slate-100 rounded-xl">
-          <Terminal className="w-8 h-8 text-slate-700" />
+        <div className="p-1">
+          <img src="/logo.png" alt="Darkshel Logo" className="w-20 h-20" />
         </div>
       </motion.div>
       <motion.h1

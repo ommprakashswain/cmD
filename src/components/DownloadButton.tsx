@@ -20,12 +20,15 @@ export function DownloadButton() {
   };
 
   return (
-    <button
-      onClick={handleDownload}
-      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-md font-medium hover:bg-slate-800 transition-colors focus:ring-4 focus:ring-slate-200 outline-none"
-    >
-      <Download size={18} />
-      <span>Download for Windows</span>
-    </button>
+    <div className="flex flex-col items-center gap-2">
+      <button
+        onClick={handleDownload}
+        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-md font-medium hover:bg-slate-800 transition-colors focus:ring-4 focus:ring-slate-200 outline-none"
+      >
+        <Download size={18} />
+        <span>Download for Windows</span>
+      </button>
+      <p className="text-xs text-slate-500 font-mono">Approx. 45MB</p>
+    </div>
   );
 }

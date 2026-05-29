@@ -52,7 +52,11 @@
       "main.cjs"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "public/logo.png"
+    },
+    "nsis": {
+      "wizardImage": "public/intro.png"
     }
   }
 }

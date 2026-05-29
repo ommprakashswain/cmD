@@ -1,4 +1,4 @@
-import { Layout as LayoutIcon } from 'lucide-react';
+import { Logo } from './Logo';
 import { ReactNode } from 'react';
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -7,7 +7,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <header className="fixed top-0 inset-x-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-50">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-900 font-semibold tracking-tight">
-            <LayoutIcon className="w-5 h-5" />
+            <img src="/logo.png" alt="Darkshel Logo" className="w-6 h-6" />
             <span>Darkshel</span>
           </div>
           <nav className="hidden sm:flex gap-6 text-sm font-medium text-slate-500">
