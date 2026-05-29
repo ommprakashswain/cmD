@@ -1,34 +1,50 @@
-import { Download } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Download, Loader2 } from 'lucide-react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export function DownloadButton() {
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchLatestUpdate() {
+      try {
+        const updateDoc = await getDoc(doc(db, 'updates', 'latest'));
+        if (updateDoc.exists()) {
+          const data = updateDoc.data();
+          if (data.url) {
+            setDownloadUrl(data.url);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch latest update url:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLatestUpdate();
+  }, []);
+
   const handleDownload = () => {
-    // Generate a simple text file acting as the mock installer
-    const content = "This is a simulated Windows executable for the AI Studio preview.\nIn a real product, this would be the actual .exe installer.";
-    const blob = new Blob([content], { type: "application/octet-stream" });
-    const url = URL.createObjectURL(blob);
-    
-    // Create a temporary link and trigger the download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "WindowsAssistant_Setup.exe";
-    document.body.appendChild(a);
-    a.click();
-    
-    // Cleanup
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    if (downloadUrl) {
+      window.open(downloadUrl, '_blank');
+    } else {
+      alert("No available Windows build at the moment. Please try again later.");
+    }
   };
 
   return (
     <div className="flex flex-col items-center gap-2">
       <button
         onClick={handleDownload}
-        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-md font-medium hover:bg-slate-800 transition-colors focus:ring-4 focus:ring-slate-200 outline-none"
+        disabled={loading}
+        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-md font-medium hover:bg-slate-800 transition-colors focus:ring-4 focus:ring-slate-200 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Download size={18} />
+        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download size={18} />}
         <span>Download for Windows</span>
       </button>
-      <p className="text-xs text-slate-500 font-mono">Approx. 45MB</p>
+      <p className="text-xs text-slate-500 font-mono">Approx. 65MB</p>
     </div>
   );
 }
