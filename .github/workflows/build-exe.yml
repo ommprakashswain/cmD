@@ -29,14 +29,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Firebase Admin
-        run: npm install firebase-admin
-
-      - name: Publish Update to Firebase
+      - name: Publish Update to Supabase
         run: node scripts/release.cjs
         env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_STORAGE_BUCKET: letex-1763867847627.firebasestorage.app
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
       - name: Upload Setup Artifact
         uses: actions/upload-artifact@v4

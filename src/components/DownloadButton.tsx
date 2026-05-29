@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Download, Loader2 } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { supabase } from '../lib/supabase';
 
 export function DownloadButton() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -10,12 +9,15 @@ export function DownloadButton() {
   useEffect(() => {
     async function fetchLatestUpdate() {
       try {
-        const updateDoc = await getDoc(doc(db, 'updates', 'latest'));
-        if (updateDoc.exists()) {
-          const data = updateDoc.data();
-          if (data.url) {
-            setDownloadUrl(data.url);
-          }
+        const { data, error } = await supabase
+          .from('updates')
+          .select('url')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+          
+        if (data && data.url) {
+          setDownloadUrl(data.url);
         }
       } catch (err) {
         console.error('Failed to fetch latest update url:', err);

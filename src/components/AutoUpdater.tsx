@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { supabase } from '../lib/supabase';
 import { DownloadCloud, X } from 'lucide-react';
 import pkg from '../../package.json';
 
@@ -12,9 +11,14 @@ export function AutoUpdater() {
   useEffect(() => {
     async function checkForUpdates() {
       try {
-        const updateDoc = await getDoc(doc(db, 'updates', 'latest'));
-        if (updateDoc.exists()) {
-          const data = updateDoc.data();
+        const { data, error } = await supabase
+          .from('updates')
+          .select('version, url, releaseNotes')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+          
+        if (data) {
           const remoteVersion = data.version;
           const localVersion = pkg.version;
           

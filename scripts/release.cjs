@@ -1,32 +1,22 @@
 // release.js - Runs in GitHub actions to publish the update
 const path = require('path');
 const fs = require('fs');
-const { initializeApp, cert } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
-const { getStorage } = require('firebase-admin/storage');
+const { createClient } = require('@supabase/supabase-js');
 const pkg = require('../package.json');
-const { v4: uuidv4 } = require('crypto').randomUUID ? require('crypto') : { v4: () => Math.random().toString(36).substring(2) + Date.now().toString(36) }; // Fallback if crypto.randomUUID is not available, though in Node 20 it is.
 
 async function publishUpdate() {
   console.log(`Starting automated release for version ${pkg.version}...`);
 
-  // 1. Authenticate with Firebase using Github Secret
-  const serviceAccountStr = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!serviceAccountStr) {
-    console.error("Missing FIREBASE_SERVICE_ACCOUNT environment variable.");
+  // 1. Authenticate with Supabase using Env Vars
+  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.");
     process.exit(1);
   }
   
-  const serviceAccount = JSON.parse(Buffer.from(serviceAccountStr, 'base64').toString('ascii'));
-  
-  initializeApp({
-    credential: cert(serviceAccount),
-    // You must add your storage bucket name here (can also be an env var)
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || '<YOUR_PROJECT_ID>.appspot.com' 
-  });
-
-  const db = getFirestore();
-  const bucket = getStorage().bucket();
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   // 2. Find the built .exe file
   const releaseDir = path.join(__dirname, '..', 'release');
@@ -41,36 +31,46 @@ async function publishUpdate() {
   const exePath = path.join(releaseDir, exeFile);
   const destinationPath = `updates/${pkg.version}/${exeFile}`;
 
-  console.log(`Uploading ${exeFile} to Firebase Storage...`);
+  console.log(`Uploading ${exeFile} to Supabase Storage...`);
   
-  const downloadToken = require('crypto').randomUUID();
-
-  // 3. Upload to Firebase Storage with a download token
-  await bucket.upload(exePath, {
-    destination: destinationPath,
-    metadata: {
+  // 3. Upload to Supabase Storage
+  const fileBuffer = fs.readFileSync(exePath);
+  
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from('updates')
+    .upload(destinationPath, fileBuffer, {
       contentType: 'application/x-msdownload',
-      metadata: {
-        firebaseStorageDownloadTokens: downloadToken
+      upsert: true
+    });
+
+  if (uploadError) {
+    console.error("Failed to upload to Supabase Storage:", uploadError);
+    process.exit(1);
+  }
+
+  // 4. Construct the Supabase Storage public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from('updates')
+    .getPublicUrl(destinationPath);
+
+  // 5. Update Supabase 'updates' table
+  console.log(`Updating Supabase with new version URL: ${publicUrl}`);
+  const { error: dbError } = await supabase
+    .from('updates')
+    .insert([
+      {
+        version: pkg.version,
+        url: publicUrl,
+        releaseNotes: `Automated release of version ${pkg.version}`
       }
-    }
-  });
+    ]);
 
-  // 4. Construct the Firebase Storage download URL
-  const encodedPath = encodeURIComponent(destinationPath);
-  const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodedPath}?alt=media&token=${downloadToken}`;
+  if (dbError) {
+    console.error("Failed to update database record:", dbError);
+    process.exit(1);
+  }
 
-  // 5. Update Firestore 'updates/latest'
-  console.log(`Updating Firestore with new version URL: ${url}`);
-  await db.collection('updates').doc('latest').set({
-    version: pkg.version,
-    url: url,
-    releaseNotes: `Automated release of version ${pkg.version}`,
-    createdAt: Date.now()
-  });
-
-  console.log("Release successfully pushed to Firebase!");
+  console.log("Release successfully pushed to Supabase!");
 }
 
 publishUpdate().catch(console.error);
-
