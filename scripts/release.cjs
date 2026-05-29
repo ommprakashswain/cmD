@@ -5,6 +5,7 @@ const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const { getStorage } = require('firebase-admin/storage');
 const pkg = require('../package.json');
+const { v4: uuidv4 } = require('crypto').randomUUID ? require('crypto') : { v4: () => Math.random().toString(36).substring(2) + Date.now().toString(36) }; // Fallback if crypto.randomUUID is not available, though in Node 20 it is.
 
 async function publishUpdate() {
   console.log(`Starting automated release for version ${pkg.version}...`);
@@ -42,18 +43,22 @@ async function publishUpdate() {
 
   console.log(`Uploading ${exeFile} to Firebase Storage...`);
   
-  // 3. Upload to Firebase Storage
+  const downloadToken = require('crypto').randomUUID();
+
+  // 3. Upload to Firebase Storage with a download token
   await bucket.upload(exePath, {
     destination: destinationPath,
     metadata: {
       contentType: 'application/x-msdownload',
+      metadata: {
+        firebaseStorageDownloadTokens: downloadToken
+      }
     }
   });
 
-  // 4. Make it public and get the URL
-  const fileRef = bucket.file(destinationPath);
-  await fileRef.makePublic();
-  const url = `https://storage.googleapis.com/${bucket.name}/${destinationPath}`;
+  // 4. Construct the Firebase Storage download URL
+  const encodedPath = encodeURIComponent(destinationPath);
+  const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodedPath}?alt=media&token=${downloadToken}`;
 
   // 5. Update Firestore 'updates/latest'
   console.log(`Updating Firestore with new version URL: ${url}`);
