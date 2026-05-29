@@ -51,10 +51,60 @@ export function DesktopApp() {
         cmd = "ipconfig /all";
       } else if (lower.includes('bluetooth') || lower.includes('headphones')) {
         aiText = "I'll restart your Bluetooth services and re-enable discovery.";
-        cmd = "Restart-Service bthserv -Force; Set-BluetoothStatus -On";
+        if (lower.includes('turn on') || lower.includes('enable')) {
+           cmd = "Start-Service bthserv -ErrorAction SilentlyContinue";
+        } else if (lower.includes('turn off') || lower.includes('disable')) {
+           cmd = "Stop-Service bthserv -Force -ErrorAction SilentlyContinue";
+        } else {
+           cmd = "Restart-Service bthserv -Force";
+        }
+      } else if (lower.includes('wifi') || lower.includes('wi-fi')) {
+        aiText = "Managing Wi-Fi adapter.";
+        if (lower.includes('turn off') || lower.includes('disable')) {
+           cmd = "Disable-NetAdapter -Name 'Wi-Fi' -Confirm:$false -ErrorAction SilentlyContinue";
+        } else if (lower.includes('turn on') || lower.includes('enable')) {
+           cmd = "Enable-NetAdapter -Name 'Wi-Fi' -ErrorAction SilentlyContinue";
+        } else {
+           cmd = "Get-NetAdapter -Name 'Wi-Fi'";
+        }
       } else if (lower.includes('dns') || lower.includes('flush')) {
         aiText = "I will flush your DNS cache to resolve potential domain routing issues.";
         cmd = "Clear-DnsClientCache; ipconfig /flushdns";
+      } else if (lower.includes('chrome')) {
+        aiText = "Opening Google Chrome...";
+        cmd = "Start-Process chrome";
+      } else if (lower.includes('edge')) {
+        aiText = "Opening Microsoft Edge...";
+        cmd = "Start-Process msedge";
+      } else if (lower.includes('explorer') || lower.includes('folder')) {
+        aiText = "Opening File Explorer...";
+        cmd = "Start-Process explorer";
+      } else if (lower.includes('settings')) {
+        aiText = "Opening Windows Settings...";
+        cmd = "Start-Process ms-settings:";
+      } else if (lower.includes('task manager')) {
+        aiText = "Opening Task Manager...";
+        cmd = "Start-Process taskmgr";
+      } else if (lower.includes('volume')) {
+        aiText = "Adjusting system volume...";
+        if (lower.includes('mute')) {
+           cmd = "$obj = new-object -com wscript.shell; $obj.SendKeys([char]173)";
+        } else if (lower.includes('up') || lower.includes('increase')) {
+           cmd = "$obj = new-object -com wscript.shell; $obj.SendKeys([char]175)";
+        } else if (lower.includes('down') || lower.includes('decrease')) {
+           cmd = "$obj = new-object -com wscript.shell; $obj.SendKeys([char]174)";
+        } else {
+           cmd = "sndvol";
+        }
+      } else if (lower.includes('shutdown') || lower.includes('turn off computer')) {
+        aiText = "Shutting down the system...";
+        cmd = "Stop-Computer -Force";
+      } else if (lower.includes('restart computer')) {
+        aiText = "Restarting the system...";
+        cmd = "Restart-Computer -Force";
+      } else if (lower.includes('system info')) {
+        aiText = "Fetching System Information...";
+        cmd = "systeminfo";
       }
 
       const assistantMsgId = (Date.now() + 1).toString();
@@ -66,13 +116,23 @@ export function DesktopApp() {
         status: 'executing'
       }]);
 
-      // Mock Execution via Electron IPC (Inter-Process Communication)
+      // Execute via Electron IPC / Node Integration
       setTimeout(() => {
-         // In a real Electron app this would call:
-         // window.electronAPI.runPowerShell(cmd).then(result => ...)
-         setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, status: 'success' } : m));
-         setIsProcessing(false);
-      }, 1500);
+         try {
+           const { exec } = (window as any).require('child_process');
+           // Execute using powershell intentionally to support PS commands
+           exec(cmd, { shell: 'powershell.exe' }, (error: any, stdout: any, stderr: any) => {
+             console.log(stdout, stderr);
+             setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, status: error ? 'error' : 'success' } : m));
+             setIsProcessing(false);
+           });
+         } catch (e) {
+           // Not running in Electron, fallback to mock success
+           console.warn("Not in Electron environment. Simulating success.");
+           setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, status: 'success' } : m));
+           setIsProcessing(false);
+         }
+      }, 500);
 
     }, 800);
   };

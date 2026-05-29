@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function Logo({ className = "w-5 h-5", ...props }: React.SVGProps<SVGSVGElement>) {
   return (
     <svg 
